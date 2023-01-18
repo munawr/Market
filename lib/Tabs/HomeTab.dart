@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import '../Services/DealsService.dart';
+
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
 
@@ -53,23 +55,40 @@ class _HomeTabState extends State<HomeTab> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: const [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Hot Deals',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: Column(
+                  //     children: const [
+                  //       Align(
+                  //         alignment: Alignment.centerLeft,
+                  //         child: Text(
+                  //           'Hot Deals',
+                  //           style: TextStyle(
+                  //             fontSize: 18,
+                  //             fontWeight: FontWeight.bold,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // FutureBuilder(
+                  //     future: ProductService().getProduct(),
+                  //     initialData: null,
+                  //     builder: (c, r) {
+                  //       if (r.hasData) {
+                  //         return ListView.builder(
+                  //             itemCount: r.data?.products?.length,
+                  //             itemBuilder: (c, index) {
+                  //               return Image.network(r
+                  //                       .data?.products?[index].thumbnail
+                  //                       .toString() ??
+                  //                   '');
+                  //             });
+                  //       } else {
+                  //         return CircularProgressIndicator();
+                  //       }
+                  //     })
                 ],
               );
             } else {

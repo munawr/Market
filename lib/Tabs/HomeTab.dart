@@ -13,15 +13,12 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
-
   @override
   void initState() {
     _controller = VideoPlayerController.network(
-      'https://vod-progressive.akamaized.net/exp=1674044948~acl=%2Fvimeo-prod-skyfire-std-us%2F01%2F995%2F14%2F354975171%2F1445009516.mp4~hmac=9eaddee72eec220c626b13f0af2d5c571b51084c6604d5de7c05885478910726/vimeo-prod-skyfire-std-us/01/995/14/354975171/1445009516.mp4?download=1&filename=Pexels+Videos+2825517.mp4',
-    );
-
+        'https://user-images.githubusercontent.com/106265891/213249564-650e70ef-120b-4b49-b177-507bb4b7d98e.mp4');
     _initializeVideoPlayerFuture = _controller.initialize();
-
+    _controller.setLooping(true);
     super.initState();
   }
 
@@ -35,83 +32,200 @@ class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        body: FutureBuilder(
-          future: _initializeVideoPlayerFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return Column(
+        child: Scaffold(
+      body: Column(
+        children: [
+          Container(
+              padding: const EdgeInsets.all(10),
+              color: Colors.green,
+              child: Column(
                 children: [
-                  Container(
-                    color: Colors.green,
-                    child: Container(
-                      margin: const EdgeInsets.all(20),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(18),
-                        child: AspectRatio(
-                          aspectRatio: _controller.value.aspectRatio,
-                          child: VideoPlayer(_controller),
-                        ),
-                      ),
+                  FutureBuilder(
+                    future: _initializeVideoPlayerFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: AspectRatio(
+                            aspectRatio: _controller.value.aspectRatio,
+                            child: VideoPlayer(_controller),
+                          ),
+                        );
+                      } else {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        if (_controller.value.isPlaying) {
+                          _controller.pause();
+                        } else {
+                          _controller.play();
+                        }
+                      });
+                    },
+                    child: Icon(
+                      _controller.value.isPlaying
+                          ? Icons.pause
+                          : Icons.play_arrow,
                     ),
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: Column(
-                  //     children: const [
-                  //       Align(
-                  //         alignment: Alignment.centerLeft,
-                  //         child: Text(
-                  //           'Hot Deals',
-                  //           style: TextStyle(
-                  //             fontSize: 18,
-                  //             fontWeight: FontWeight.bold,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  // FutureBuilder(
-                  //     future: ProductService().getProduct(),
-                  //     initialData: null,
-                  //     builder: (c, r) {
-                  //       if (r.hasData) {
-                  //         return ListView.builder(
-                  //             itemCount: r.data?.products?.length,
-                  //             itemBuilder: (c, index) {
-                  //               return Image.network(r
-                  //                       .data?.products?[index].thumbnail
-                  //                       .toString() ??
-                  //                   '');
-                  //             });
-                  //       } else {
-                  //         return CircularProgressIndicator();
-                  //       }
-                  //     })
                 ],
-              );
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              if (_controller.value.isPlaying) {
-                _controller.pause();
-              } else {
-                _controller.play();
-              }
-            });
-          },
-          child: Icon(
-            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+              )),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: const [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Hot Deals',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          Expanded(
+            child: FutureBuilder(
+                future: ProductService().getProduct(),
+                initialData: null,
+                builder: (c, r) {
+                  if (r.hasData) {
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: 150,
+                          child: ListView.builder(
+                              padding: const EdgeInsets.only(left: 20),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: r.data?.products?.length,
+                              itemBuilder: (c, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: SizedBox(
+                                    width: 90,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          child: SizedBox(
+                                            height: 90,
+                                            width: 90,
+                                            child: Image.network(
+                                              r.data?.products?[index].thumbnail
+                                                      .toString() ??
+                                                  '',
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 4,
+                                        ),
+                                        Text(
+                                          r.data?.products?[index].title ?? '',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '\$ ${r.data?.products?[index].price.toString()}',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w600),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: const [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Trending',
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 150,
+                          child: ListView.builder(
+                              padding: const EdgeInsets.only(left: 20),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: r.data?.products?.length,
+                              itemBuilder: (c, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: SizedBox(
+                                    width: 90,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          child: SizedBox(
+                                            height: 90,
+                                            width: 90,
+                                            child: Image.network(
+                                              r.data?.products?[index].thumbnail
+                                                      .toString() ??
+                                                  '',
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 4,
+                                        ),
+                                        Text(
+                                          r.data?.products?[index].title ?? '',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '\$ ${r.data?.products?[index].price.toString()}',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w600),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                        )
+                      ],
+                    );
+                  } else {
+                    return const SizedBox(
+                        height: 10,
+                        width: 10,
+                        child: CircularProgressIndicator());
+                  }
+                }),
+          )
+        ],
       ),
-    );
+    ));
   }
 }

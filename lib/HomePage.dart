@@ -27,8 +27,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+          centerTitle: true,
           elevation: 0,
-          title: const Text("MArket"),
+          title: const Text("Market"),
           backgroundColor: Color.fromARGB(255, 50, 178, 82).withOpacity(.6)),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
